@@ -39,6 +39,7 @@ router.post('/send', (req, res, next) => {
       res.json({
         msg: 'fail'
       })
+      console.log("send error: " + err)
     } else {
       res.json({
         msg: 'success'
