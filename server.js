@@ -4,7 +4,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 4000;
 const cors = require("cors");
-const mailRoutes = require("./routes/index")
+const mailRoutes = require("./routes/mailRoutes")
 
 
 app.use(cors());
