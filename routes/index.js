@@ -1,51 +1,39 @@
-var express = require('express');
-var router = express.Router();
-var nodemailer = require('nodemailer');
+const express = require("express");
+const MailRouter = express.Router();
+const nodemailer = require('nodemailer')
 const creds = require('../config/config');
 
-var transport = {
-  host: 'Gmail',
-  port: 465,
-  auth: {
-    user: creds.USER,
-    pass: creds.PASS
-  }
-}
+// Mailer routes for contact form
+MailRouter.route('/').post((req, res) => {
+  let data = req.body
 
-var transporter = nodemailer.createTransport(transport)
-
-transporter.verify((error, success) => {
-  if (error) {
-    console.log(error);
-  } else {
-    console.log('Server is ready to take messages');
-  }
-});
-
-router.post('/send', (req, res, next) => {
-  var name = req.body.name
-  var email = req.body.email
-  var message = req.body.message
-  var content = `name: ${name} \n email: ${email} \n message: ${message} `
-
-  var mail = {
-    from: name,
-    to: 'logandempsey199@gmail.com',  
-    subject: 'New Message from Contact Form',
-    text: content
-  }
-
-  transporter.sendMail(mail, (err, data) => {
-    if (err) {
-      res.json({
-        msg: 'fail'
-      })
-    } else {
-      res.json({
-        msg: 'success'
-      })
+  let smtpTransport = nodemailer.createTransport({
+    service: 'Gmail',
+    port: 465,
+    auth: {
+      user: creds.USER,
+      pass: creds.PASS
     }
-  })
+  });
+
+  let mailOptions = {
+    from: data.email,
+    to: 'logandempsey199@gmail.com',
+    subject: 'Message from Contact Form',
+    html: `<p>Message from: ${data.name}</p>
+          <p>Reply to: ${data.email}</p>
+          <p>Message: ${data.message}</p>`
+  }
+
+  smtpTransport.sendMail(mailOptions,
+    (error, response)=> {
+      if(error) {
+        res.send("Mailer Error in sendMail call: " + error)
+      } else {
+        res.send('Success: ' + response)
+      }
+      smtpTransport.close()
+    })
 })
 
-module.exports = router;
+module.exports = MailRouter
