@@ -3,11 +3,14 @@ var path = require('path');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+const cors = require('cors')
 
 var index = require('./routes/index');
 
 
 var app = express();
+
+app.use(cors())
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
